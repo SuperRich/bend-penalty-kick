@@ -113,7 +113,9 @@ function shoot(lane, height) {
   S.phase = Phase.PhaseFlight;
   S.t = 0;
   S.dest = { x: S.aimX, y: S.aimY };
-  S.keeperTarget = Math.min(1, Math.max(0, laneCenter(dive)));
+  S.keeperTarget = Math.min(1, Math.max(0, saved
+    ? (S.aimX - GOAL.x) / GOAL.w
+    : laneCenter(dive)));
 }
 
 function finishKick() {
@@ -277,6 +279,8 @@ function draw() {
     const ax = w * S.aimX;
     const ay = h * S.aimY;
     ctx.strokeStyle = "rgba(244,241,232,0.7)";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "butt";
     ctx.setLineDash([6, 6]);
     ctx.beginPath();
     ctx.moveTo(w * SPOT.x, h * SPOT.y);
