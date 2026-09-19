@@ -4,6 +4,8 @@ A 2D penalty shootout. You aim left and right, shoot, and try to beat a simple A
 
 Play it at [https://SuperRich.github.io/bend-penalty-kick/](https://SuperRich.github.io/bend-penalty-kick/).
 
+This token cannot turn Pages on (`gh api` and Actions both get 403). In the repo on GitHub, open Settings, then Pages. Set source to Deploy from a branch, branch `main`, folder `/docs`. The same files also sit on the `gh-pages` branch at its root if you prefer that source.
+
 ## How to play
 
 1. Open the page.
