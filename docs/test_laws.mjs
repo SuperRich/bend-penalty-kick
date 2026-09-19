@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   Lane,
   Height,
@@ -12,6 +13,16 @@ import {
   classifyAim,
   phaseOk,
 } from "./laws.js";
+
+const bend = readFileSync(new URL("../game.bend", import.meta.url), "utf8");
+for (const name of [
+  ...Object.values(Lane),
+  ...Object.values(Height),
+  ...Object.values(KickOutcome),
+  ...Object.values(Phase),
+]) {
+  assert.equal(bend.includes(`${name}{}`), true, name);
+}
 
 for (const lane of Object.values(Lane)) {
   for (const height of Object.values(Height)) {

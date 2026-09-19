@@ -18,11 +18,11 @@ const statusEl = document.getElementById("status");
 const againBtn = document.getElementById("again");
 
 const FRAME = [Lane.Left, Lane.Center, Lane.Right];
-const DIVES = [Lane.Left, Lane.Center, Lane.Right];
 const LANES = [Lane.WideLeft, Lane.Left, Lane.Center, Lane.Right, Lane.WideRight];
 
 const GOAL = { x: 0.18, y: 0.05, w: 0.64, h: 0.28 };
 const SPOT = { x: 0.5, y: 0.86 };
+const REST_AIM = { x: 0.5, y: GOAL.y + GOAL.h * 0.55 };
 
 function fresh() {
   return {
@@ -32,8 +32,8 @@ function fresh() {
     youTaken: 0,
     themTaken: 0,
     side: "you",
-    aimX: 0.5,
-    aimY: 0.42,
+    aimX: REST_AIM.x,
+    aimY: REST_AIM.y,
     t: 0,
     ball: { x: SPOT.x, y: SPOT.y },
     dest: { x: SPOT.x, y: SPOT.y },
@@ -70,44 +70,51 @@ function statusText() {
 
 function hud() {
   scoreEl.textContent = `YOU ${S.you} - ${S.them} AI`;
-  kicksEl.textContent = S.phase === Phase.PhaseOver ? "Match over" : `Best of 5 · ${S.side === "you" ? "you shoot" : "AI shoots"}`;
+  kicksEl.textContent = S.phase === Phase.PhaseOver
+    ? "Match over"
+    : `Best of 5 · ${S.side === "you" ? "you shoot" : "AI shoots"}`;
   statusEl.textContent = statusText();
   againBtn.hidden = S.phase !== Phase.PhaseOver;
 }
 
 function laneCenter(lane) {
   switch (lane) {
-    case Lane.WideLeft: return 0.06;
+    case Lane.WideLeft: return -0.12;
     case Lane.Left: return 0.22;
     case Lane.Center: return 0.5;
     case Lane.Right: return 0.78;
-    case Lane.WideRight: return 0.94;
+    case Lane.WideRight: return 1.12;
     default: return 0.5;
   }
 }
 
-function destOf(lane, height) {
-  return {
-    x: GOAL.x + laneCenter(lane) * GOAL.w,
-    y: height === Height.Over ? GOAL.y + 0.02 : GOAL.y + GOAL.h * 0.62,
-  };
+function aimOf(lane, height) {
+  const x = GOAL.x + laneCenter(lane) * GOAL.w;
+  const y = height === Height.Over ? GOAL.y - 0.04 : REST_AIM.y;
+  return { x: Math.min(1, Math.max(0, x)), y: Math.min(1, Math.max(0, y)) };
+}
+
+function classifyPitch(nx, ny) {
+  // Lane bins are pitch-wide. Over is above the bar, not the top of the canvas.
+  const { lane } = classifyAim(nx, 0.5);
+  return { lane, height: ny < GOAL.y ? Height.Over : Height.Under };
 }
 
 function pickDive(lane) {
   const cover = S.side === "you" ? 0.36 : 0.55;
   if (Math.random() < cover && FRAME.includes(lane)) return lane;
-  return DIVES[(Math.random() * 3) | 0];
+  return FRAME[(Math.random() * 3) | 0];
 }
 
 function shoot(lane, height) {
   if (S.phase !== Phase.PhaseAiming) return;
   const dive = pickDive(lane);
-  const saved = dive === lane && height === Height.Under && FRAME.includes(lane);
+  const saved = dive === lane;
   S.outcome = resolve(lane, height, saved);
   S.phase = Phase.PhaseFlight;
   S.t = 0;
-  S.dest = destOf(lane, height);
-  S.keeperTarget = laneCenter(dive);
+  S.dest = { x: S.aimX, y: S.aimY };
+  S.keeperTarget = Math.min(1, Math.max(0, laneCenter(dive)));
 }
 
 function finishKick() {
@@ -134,8 +141,8 @@ function nextKick() {
   S.dest = { x: SPOT.x, y: SPOT.y };
   S.keeperX = 0.5;
   S.keeperTarget = 0.5;
-  S.aimX = 0.5;
-  S.aimY = 0.42;
+  S.aimX = REST_AIM.x;
+  S.aimY = REST_AIM.y;
   if (S.side === "them") window.setTimeout(aiTake, 420);
 }
 
@@ -143,8 +150,9 @@ function aiTake() {
   if (S.phase !== Phase.PhaseAiming || S.side !== "them") return;
   const lane = LANES[(Math.random() * 5) | 0];
   const height = Math.random() < 0.12 ? Height.Over : Height.Under;
-  S.aimX = laneCenter(lane);
-  S.aimY = height === Height.Over ? 0.08 : 0.4;
+  const aim = aimOf(lane, height);
+  S.aimX = aim.x;
+  S.aimY = aim.y;
   shoot(lane, height);
 }
 
@@ -176,7 +184,7 @@ function tryShootFromPointer(ev) {
   if (advanceFromClick()) return;
   if (S.phase !== Phase.PhaseAiming || S.side !== "you") return;
   aimFromPointer(ev);
-  const { lane, height } = classifyAim(S.aimX, S.aimY);
+  const { lane, height } = classifyPitch(S.aimX, S.aimY);
   shoot(lane, height);
 }
 
@@ -192,7 +200,7 @@ window.addEventListener("keydown", (ev) => {
     ev.preventDefault();
     if (advanceFromClick()) return;
     if (S.phase === Phase.PhaseAiming && S.side === "you") {
-      const { lane, height } = classifyAim(S.aimX, S.aimY);
+      const { lane, height } = classifyPitch(S.aimX, S.aimY);
       shoot(lane, height);
     }
   }
