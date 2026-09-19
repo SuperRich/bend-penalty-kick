@@ -44,14 +44,35 @@ h1 {
   text-align: center;
 }
 
+.stage {
+  position: relative;
+}
+
 canvas {
   width: 100%;
-  height: auto;
+  height: min(72vh, 560px);
   border-radius: 12px;
   display: block;
-  background: var(--grass);
+  background: #2a6d9a;
   touch-action: none;
   cursor: crosshair;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  letter-spacing: 0.08em;
+  background: rgba(11, 31, 18, 0.4);
+  pointer-events: none;
+}
+
+.flash[hidden] {
+  display: none;
 }
 
 button {

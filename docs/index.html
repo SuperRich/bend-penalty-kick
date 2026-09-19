@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Bend Penalty Kick</title>
   
-<link rel="stylesheet" crossorigin href="./chunk-c042pghk.css"><script type="module" crossorigin src="./chunk-x6bwdnhb.js"></script></head>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+<link rel="stylesheet" crossorigin href="./chunk-qnwdmh94.css"><script type="module" crossorigin src="./chunk-dc8bzh6e.js"></script></head>
 <body>
   <main>
     <header>
@@ -13,8 +14,11 @@
       <p class="score" id="score">YOU 0 - 0 AI</p>
       <p class="kicks" id="kicks">Best of 5 · you shoot</p>
     </header>
-    <canvas id="pitch" width="720" height="480"></canvas>
-    <p class="status" id="status">Aim with mouse, touch, or arrows. Shoot with click, tap, or Space.</p>
+    <div class="stage">
+      <canvas id="pitch"></canvas>
+      <p class="flash" id="flash" hidden></p>
+    </div>
+    <p class="status" id="status">Click the pitch to start sound. Then aim and shoot.</p>
     <button id="again" type="button" hidden>Play again</button>
   </main>
   
