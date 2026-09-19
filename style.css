@@ -1,0 +1,66 @@
+:root {
+  color-scheme: dark;
+  --grass: #1b7a3a;
+  --ink: #f4f1e8;
+  --muted: #c9e6cf;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #0b1f12;
+  color: var(--ink);
+  font-family: ui-sans-serif, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 12px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+header { text-align: center; }
+
+h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+}
+
+.score {
+  margin: 6px 0 0;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.kicks, .status {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  background: var(--grass);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+button {
+  align-self: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font: inherit;
+  background: var(--ink);
+  color: #0b1f12;
+  cursor: pointer;
+}
