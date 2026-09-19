@@ -4,7 +4,7 @@ A 3D penalty shootout. You aim and shoot. A simple AI keeps and takes. Best of 5
 
 Play it at [https://SuperRich.github.io/bend-penalty-kick/](https://SuperRich.github.io/bend-penalty-kick/).
 
-The pitch is a Babylon.js scene (CDN `babylon.js`, not Three.js). Click the canvas once if the browser blocks audio.
+The pitch is a Babylon.js scene (CDN `babylon.js`, not Three.js). The kick taker and the keeper are procedural humanoids. A stand and a crowd sit behind the goal. Click the canvas once if the browser blocks audio.
 
 This token cannot turn Pages on. `gh api` and Actions both get 403. In the repo on GitHub, open Settings, then Pages. Set source to Deploy from a branch, branch `main`, folder `/docs`.
 
@@ -56,6 +56,7 @@ Then:
 ```
 bend PROOF.bend
 node web/test_shell.mjs
+node web/test_layout.mjs
 bend web/index.html -o docs
 ```
 

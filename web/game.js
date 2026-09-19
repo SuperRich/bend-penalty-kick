@@ -12,11 +12,6 @@ import {
   GOAL,
   SPOT,
   REST_AIM,
-  BAR_Y,
-  GOAL_HALF_W,
-  XMIN,
-  XWIDTH,
-  YMAX,
   SPOT_Z,
   BALL_R,
   clamp01,
@@ -25,6 +20,8 @@ import {
   keeperWorldX,
 } from "./pitch.js";
 import { unlockSound, playKick, playGoal, playSave, playMiss } from "./sound.js";
+import { buildStage } from "./look.js";
+import { KEEPER_Z } from "./layout.js";
 
 function tag(name) {
   return { $: name };
@@ -229,152 +226,7 @@ if (!window.BABYLON) {
 const B = window.BABYLON;
 const engine = new B.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true }, true);
 const scene = new B.Scene(engine);
-scene.clearColor = new B.Color4(0.42, 0.7, 0.94, 1);
-scene.fogMode = B.Scene.FOGMODE_LINEAR;
-scene.fogStart = 22;
-scene.fogEnd = 48;
-scene.fogColor = new B.Color3(0.55, 0.75, 0.92);
-
-const camera = new B.FreeCamera("cam", new B.Vector3(0, 1.7, 14.8), scene);
-camera.minZ = 0.08;
-camera.fov = 1.05;
-camera.setTarget(new B.Vector3(0, 1.05, 2.5));
-
-const hemi = new B.HemisphericLight("hemi", new B.Vector3(0.15, 1, 0.25), scene);
-hemi.intensity = 0.85;
-const sun = new B.DirectionalLight("sun", new B.Vector3(0.45, -1.15, 0.35), scene);
-sun.position = new B.Vector3(-8, 16, 10);
-sun.intensity = 0.85;
-
-const pitchMat = new B.StandardMaterial("pitchMat", scene);
-pitchMat.diffuseColor = new B.Color3(0.11, 0.46, 0.22);
-pitchMat.specularColor = new B.Color3(0.04, 0.04, 0.04);
-const pitch = B.MeshBuilder.CreateGround("pitch", { width: 22, height: 30 }, scene);
-pitch.position.z = 8;
-pitch.material = pitchMat;
-
-const stripeMat = new B.StandardMaterial("stripeMat", scene);
-stripeMat.diffuseColor = new B.Color3(0.09, 0.4, 0.19);
-stripeMat.specularColor = new B.Color3(0, 0, 0);
-for (let i = 0; i < 8; i++) {
-  const strip = B.MeshBuilder.CreateGround("s" + i, { width: 22, height: 1.6 }, scene);
-  strip.position.z = i * 3.2 + 0.4;
-  strip.position.y = 0.005;
-  strip.material = stripeMat;
-}
-
-const lineMat = new B.StandardMaterial("lineMat", scene);
-lineMat.diffuseColor = new B.Color3(0.95, 0.95, 0.92);
-lineMat.emissiveColor = new B.Color3(0.15, 0.15, 0.14);
-const boxLine = (name, w, d, x, z) => {
-  const m = B.MeshBuilder.CreateBox(name, { width: w, height: 0.03, depth: d }, scene);
-  m.position = new B.Vector3(x, 0.02, z);
-  m.material = lineMat;
-  return m;
-};
-boxLine("boxL", 0.08, 16.5, -5.5, 8.25);
-boxLine("boxR", 0.08, 16.5, 5.5, 8.25);
-boxLine("boxB", 11.08, 0.08, 0, 16.5);
-boxLine("six", 10, 0.08, 0, 5.5);
-const spotMark = B.MeshBuilder.CreateCylinder("spot", { height: 0.02, diameter: 0.3 }, scene);
-spotMark.position = new B.Vector3(0, 0.015, SPOT_Z);
-spotMark.material = lineMat;
-
-const postMat = new B.StandardMaterial("postMat", scene);
-postMat.diffuseColor = new B.Color3(0.96, 0.95, 0.9);
-postMat.specularColor = new B.Color3(0.3, 0.3, 0.3);
-function post(name, x) {
-  const p = B.MeshBuilder.CreateCylinder(name, { height: BAR_Y, diameter: 0.16 }, scene);
-  p.position = new B.Vector3(x, BAR_Y / 2, 0);
-  p.material = postMat;
-  return p;
-}
-post("postL", -GOAL_HALF_W);
-post("postR", GOAL_HALF_W);
-const bar = B.MeshBuilder.CreateCylinder("bar", { height: GOAL_HALF_W * 2 + 0.16, diameter: 0.16 }, scene);
-bar.rotation.z = Math.PI / 2;
-bar.position = new B.Vector3(0, BAR_Y, 0);
-bar.material = postMat;
-
-const netTex = new B.DynamicTexture("netTex", { width: 256, height: 128 }, scene, true);
-const nctx = netTex.getContext();
-nctx.clearRect(0, 0, 256, 128);
-nctx.strokeStyle = "rgba(244,241,232,0.62)";
-nctx.lineWidth = 2;
-for (let i = 0; i <= 18; i++) {
-  nctx.beginPath();
-  nctx.moveTo((i / 18) * 256, 0);
-  nctx.lineTo((i / 18) * 256, 128);
-  nctx.stroke();
-}
-for (let j = 0; j <= 8; j++) {
-  nctx.beginPath();
-  nctx.moveTo(0, (j / 8) * 128);
-  nctx.lineTo(256, (j / 8) * 128);
-  nctx.stroke();
-}
-netTex.update();
-const netMat = new B.StandardMaterial("netMat", scene);
-netMat.diffuseTexture = netTex;
-netMat.diffuseTexture.hasAlpha = true;
-netMat.useAlphaFromDiffuseTexture = true;
-netMat.backFaceCulling = false;
-netMat.specularColor = new B.Color3(0, 0, 0);
-const net = B.MeshBuilder.CreatePlane("net", { width: GOAL_HALF_W * 2 + 0.2, height: BAR_Y }, scene);
-net.position = new B.Vector3(0, BAR_Y / 2, -0.85);
-net.material = netMat;
-const netL = B.MeshBuilder.CreatePlane("netL", { width: 0.9, height: BAR_Y }, scene);
-netL.position = new B.Vector3(-GOAL_HALF_W, BAR_Y / 2, -0.42);
-netL.rotation.y = Math.PI / 2;
-netL.material = netMat;
-const netR = netL.clone("netR");
-netR.position.x = GOAL_HALF_W;
-
-const ballMat = new B.StandardMaterial("ballMat", scene);
-ballMat.diffuseColor = new B.Color3(0.96, 0.96, 0.94);
-ballMat.specularColor = new B.Color3(0.25, 0.25, 0.25);
-const ball = B.MeshBuilder.CreateSphere("ball", { diameter: BALL_R * 2, segments: 14 }, scene);
-ball.material = ballMat;
-
-const bodyMat = new B.StandardMaterial("bodyMat", scene);
-bodyMat.diffuseColor = new B.Color3(0.12, 0.22, 0.55);
-const skinMat = new B.StandardMaterial("skinMat", scene);
-skinMat.diffuseColor = new B.Color3(0.94, 0.8, 0.64);
-const keeperRoot = new B.TransformNode("keeper", scene);
-const body = B.MeshBuilder.CreateBox("body", { width: 0.52, height: 1.05, depth: 0.28 }, scene);
-body.position.y = 0.85;
-body.material = bodyMat;
-body.parent = keeperRoot;
-const head = B.MeshBuilder.CreateSphere("head", { diameter: 0.28, segments: 10 }, scene);
-head.position.y = 1.52;
-head.material = skinMat;
-head.parent = keeperRoot;
-const gloveL = B.MeshBuilder.CreateBox("gloveL", { width: 0.16, height: 0.16, depth: 0.1 }, scene);
-gloveL.position = new B.Vector3(-0.4, 1.05, 0.12);
-gloveL.material = skinMat;
-gloveL.parent = keeperRoot;
-const gloveR = gloveL.clone("gloveR");
-gloveR.position.x = 0.4;
-
-pitch.receiveShadows = true;
-const shadow = new B.ShadowGenerator(1024, sun);
-shadow.useBlurExponentialShadowMap = true;
-shadow.setDarkness(0.35);
-shadow.addShadowCaster(ball);
-shadow.addShadowCaster(body);
-shadow.addShadowCaster(head);
-
-const aimMat = new B.StandardMaterial("aimMat", scene);
-aimMat.diffuseColor = new B.Color3(1, 0.88, 0.35);
-aimMat.emissiveColor = new B.Color3(0.35, 0.28, 0.05);
-const aimDot = B.MeshBuilder.CreateSphere("aimDot", { diameter: 0.16, segments: 8 }, scene);
-aimDot.material = aimMat;
-
-const aimPlane = B.MeshBuilder.CreatePlane("aimPlane", { width: XWIDTH, height: YMAX }, scene);
-aimPlane.position = new B.Vector3(0, YMAX / 2, 0.04);
-aimPlane.isVisible = false;
-aimPlane.isPickable = true;
-pitch.isPickable = false;
+const { ball, keeperRoot, aimDot, aimPlane } = buildStage(B, scene);
 
 let aimLine = null;
 
@@ -396,7 +248,7 @@ function aimPoint() {
 function syncView() {
   S.keeperX += (S.keeperTarget - S.keeperX) * 0.12;
   keeperRoot.position.x = keeperWorldX(S.keeperX);
-  keeperRoot.position.z = 0.42;
+  keeperRoot.position.z = KEEPER_Z;
   keeperRoot.rotation.z = (0.5 - S.keeperX) * 0.45;
 
   if (S.phase === Phase.PhaseFlight) {
