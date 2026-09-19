@@ -238,13 +238,17 @@ function drawPitch(w, h) {
     ctx.stroke();
   }
   ctx.strokeStyle = "#f4f1e8";
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 10;
+  ctx.lineCap = "square";
   ctx.beginPath();
-  ctx.moveTo(gx, gy + gh);
+  ctx.moveTo(gx, gy + gh + 8);
   ctx.lineTo(gx, gy);
   ctx.lineTo(gx + gw, gy);
-  ctx.lineTo(gx + gw, gy + gh);
+  ctx.lineTo(gx + gw, gy + gh + 8);
   ctx.stroke();
+  ctx.fillStyle = "#f4f1e8";
+  ctx.fillRect(gx - 5, gy + gh, 10, 10);
+  ctx.fillRect(gx + gw - 5, gy + gh, 10, 10);
 }
 
 function draw() {
