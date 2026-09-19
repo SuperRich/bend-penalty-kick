@@ -28,7 +28,7 @@ The four laws are:
 - One kick cannot be both Goal and Saved.
 - The kickoff phase is always `PhaseAiming`, `PhaseFlight`, `PhaseGoal`, `PhaseSaved`, `PhaseMiss`, or `PhaseOver`.
 
-The browser does not run Bend. `docs/laws.js` is a hand-copied twin of `game.bend`. Same constructor names, same `resolve` table. The canvas loop calls that module and does not invent a second outcome.
+`web/game.js` imports `game.bend`. `bend web/index.html -o docs` compiles that import into a static chunk. The canvas calls `Game.resolve` and `Goals.apply`. It does not keep a second outcome table.
 
 ## Local check
 
@@ -43,7 +43,8 @@ Then:
 
 ```
 bend PROOF.bend
-node docs/test_laws.mjs
+node web/test_shell.mjs
+bend web/index.html -o docs
 ```
 
 `bend PROOF.bend` must print `All terms check.`

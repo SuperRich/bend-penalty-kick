@@ -1,14 +1,25 @@
+import Game from "../game.bend";
 import {
   Lane,
   Height,
   KickOutcome,
   Phase,
   classifyLane,
-  resolve,
-  goalsApply,
   matchOver,
   outcomeToPhase,
-} from "./laws.js";
+} from "./shell.js";
+
+function tag(name) {
+  return { $: name };
+}
+
+function resolve(lane, height, saved) {
+  return Game.resolve(tag(lane), tag(height), saved).$;
+}
+
+function goalsApply(g, o) {
+  return Number(Game["Goals.to_nat"](Game["Goals.apply"](tag("G" + g), tag(o))));
+}
 
 const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
