@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Bend Penalty Kick</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Bend Penalty Kick</h1>
+      <p class="score" id="score">YOU 0 - 0 AI</p>
+      <p class="kicks" id="kicks">Best of 5 · you shoot</p>
+    </header>
+    <canvas id="pitch" width="720" height="480"></canvas>
+    <p class="status" id="status">Aim with mouse, touch, or arrows. Shoot with click, tap, or Space.</p>
+    <button id="again" type="button" hidden>Play again</button>
+  </main>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
