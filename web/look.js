@@ -134,11 +134,11 @@ export function makeHumanoid(B, scene, name, kit, pose, opts) {
 }
 
 const TAKER_POSE = {
-  lean: 0.12,
-  lArm: { out: 0.55, fwd: -0.35, bend: 0.45 },
-  rArm: { out: -0.25, fwd: 0.55, bend: 0.7 },
-  lLeg: { out: 0.04, fwd: -0.18, bend: 0.12 },
-  rLeg: { out: -0.08, fwd: 0.28, bend: 0.2 },
+  lean: 0.16,
+  lArm: { out: 0.85, fwd: -0.2, bend: 0.55 },
+  rArm: { out: -0.35, fwd: 0.75, bend: 0.85 },
+  lLeg: { out: 0.05, fwd: -0.22, bend: 0.14 },
+  rLeg: { out: -0.1, fwd: 0.38, bend: 0.28 },
 };
 
 const KEEPER_POSE = {
@@ -165,10 +165,10 @@ function crowdPose(i, stand) {
 function dressPitch(B, scene) {
   const grass = new B.DynamicTexture("grass", { width: 512, height: 512 }, scene, false);
   const g = grass.getContext();
-  g.fillStyle = "#1c8a3c";
+  g.fillStyle = "#168033";
   g.fillRect(0, 0, 512, 512);
   for (let i = 0; i < 14; i++) {
-    g.fillStyle = i % 2 === 0 ? "#187836" : "#1f9342";
+    g.fillStyle = i % 2 === 0 ? "#12722c" : "#1c9440";
     g.fillRect(0, (i / 14) * 512, 512, 512 / 14 + 1);
   }
   for (let n = 0; n < 900; n++) {
@@ -185,7 +185,7 @@ function dressPitch(B, scene) {
   pitch.receiveShadows = true;
   pitch.isPickable = false;
 
-  const lineMat = paint(B, scene, "lineMat", "#f4f1e8", { emissive: "#2a2a26" });
+  const lineMat = paint(B, scene, "lineMat", "#f7f4ea", { emissive: "#4a4940" });
   const line = (name, w, d, x, z) => {
     const m = B.MeshBuilder.CreateBox(name, { width: w, height: 0.028, depth: d }, scene);
     m.position = new B.Vector3(x, 0.018, z);
@@ -236,8 +236,10 @@ function dressGoal(B, scene) {
   const netTex = new B.DynamicTexture("netTex", { width: 256, height: 128 }, scene, true);
   const nctx = netTex.getContext();
   nctx.clearRect(0, 0, 256, 128);
-  nctx.strokeStyle = "rgba(236,232,220,0.7)";
-  nctx.lineWidth = 2;
+  nctx.fillStyle = "rgba(236,232,220,0.12)";
+  nctx.fillRect(0, 0, 256, 128);
+  nctx.strokeStyle = "rgba(248,246,238,0.92)";
+  nctx.lineWidth = 3;
   for (let i = 0; i <= 20; i++) {
     nctx.beginPath();
     nctx.moveTo((i / 20) * 256, 0);
@@ -308,6 +310,16 @@ function dressStands(B, scene) {
     const a = B.MeshBuilder.CreateBox("ad" + i, { width: 3.2, height: 0.7, depth: 0.08 }, scene);
     a.position = new B.Vector3(-6.4 + i * 3.2, 0.55, -1.55);
     a.material = paint(B, scene, "adMat" + i, c, { emissive: c });
+  });
+  const poleMat = paint(B, scene, "poleMat", "#d7dbe2", { spec: new B.Color3(0.3, 0.3, 0.3) });
+  const lampMat = paint(B, scene, "lampMat", "#fff4cc", { emissive: "#fff1b0" });
+  [[-9.2, -6.4], [9.2, -6.4]].forEach((p, i) => {
+    const pole = B.MeshBuilder.CreateCylinder("floodPole" + i, { height: 7.4, diameter: 0.16 }, scene);
+    pole.position = new B.Vector3(p[0], 3.7, p[1]);
+    pole.material = poleMat;
+    const lamp = B.MeshBuilder.CreateBox("floodLamp" + i, { width: 0.9, height: 0.22, depth: 0.45 }, scene);
+    lamp.position = new B.Vector3(p[0], 7.35, p[1] + 0.1);
+    lamp.material = lampMat;
   });
 }
 

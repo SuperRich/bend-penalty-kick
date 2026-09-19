@@ -8,13 +8,13 @@ export const TAKER = Object.freeze({
 export const KEEPER_Z = 0.42;
 
 export const CAMERA = Object.freeze({
-  x: 2.42,
-  y: 1.92,
-  z: 15.45,
-  targetX: 0.08,
-  targetY: 1.22,
-  targetZ: 2.05,
-  fov: 0.9,
+  x: 1.85,
+  y: 2.28,
+  z: 17.8,
+  targetX: 0.05,
+  targetY: 1.35,
+  targetZ: 1.15,
+  fov: 0.78,
 });
 
 export const KITS = Object.freeze({
