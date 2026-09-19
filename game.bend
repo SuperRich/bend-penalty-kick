@@ -1,7 +1,5 @@
 import Base
 
-# Discrete pitch. X: wide miss | on-frame left/center/right | wide miss.
-# Y: over the bar | under the bar.
 type Lane is Data:
   WideLeft{}
   Left{}

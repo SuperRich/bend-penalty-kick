@@ -1,5 +1,3 @@
-// Twin of game.bend. Constructor names and resolve() must stay in lockstep.
-
 export const Lane = Object.freeze({
   WideLeft: "WideLeft",
   Left: "Left",

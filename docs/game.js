@@ -95,7 +95,6 @@ function aimOf(lane, height) {
 }
 
 function classifyPitch(nx, ny) {
-  // Lane bins are pitch-wide. Over is above the bar, not the top of the canvas.
   const { lane } = classifyAim(nx, 0.5);
   return { lane, height: ny < GOAL.y ? Height.Over : Height.Under };
 }
