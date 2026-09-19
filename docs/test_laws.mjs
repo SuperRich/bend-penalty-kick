@@ -11,6 +11,7 @@ import {
   goalsInc,
   matchOver,
   classifyAim,
+  classifyLane,
   phaseOk,
 } from "./laws.js";
 
@@ -46,6 +47,7 @@ assert.equal(matchOver(3, 0, 3, 3), true);
 assert.equal(matchOver(0, 0, 1, 1), false);
 assert.equal(matchOver(2, 2, 4, 4), false);
 
+assert.equal(classifyLane(0.5), Lane.Center);
 assert.equal(classifyAim(0.5, 0.4).lane, Lane.Center);
 assert.equal(classifyAim(0.5, 0.4).height, Height.Under);
 assert.equal(classifyAim(0.5, 0.05).height, Height.Over);

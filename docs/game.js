@@ -3,7 +3,7 @@ import {
   Height,
   KickOutcome,
   Phase,
-  classifyAim,
+  classifyLane,
   resolve,
   goalsApply,
   matchOver,
@@ -95,8 +95,7 @@ function aimOf(lane, height) {
 }
 
 function classifyPitch(nx, ny) {
-  const { lane } = classifyAim(nx, 0.5);
-  return { lane, height: ny < GOAL.y ? Height.Over : Height.Under };
+  return { lane: classifyLane(nx), height: ny < GOAL.y ? Height.Over : Height.Under };
 }
 
 function pickDive(lane) {

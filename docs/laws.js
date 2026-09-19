@@ -1,3 +1,5 @@
+// Twin of game.bend. Constructor names and resolve() must stay in lockstep.
+
 export const Lane = Object.freeze({
   WideLeft: "WideLeft",
   Left: "Left",
@@ -70,15 +72,19 @@ export function matchOver(you, them, youTaken, themTaken) {
   return false;
 }
 
+export function classifyLane(nx) {
+  if (nx < 0.16) return Lane.WideLeft;
+  if (nx < 0.38) return Lane.Left;
+  if (nx < 0.62) return Lane.Center;
+  if (nx < 0.84) return Lane.Right;
+  return Lane.WideRight;
+}
+
 export function classifyAim(nx, ny) {
-  let lane;
-  if (nx < 0.16) lane = Lane.WideLeft;
-  else if (nx < 0.38) lane = Lane.Left;
-  else if (nx < 0.62) lane = Lane.Center;
-  else if (nx < 0.84) lane = Lane.Right;
-  else lane = Lane.WideRight;
-  const height = ny < 0.16 ? Height.Over : Height.Under;
-  return { lane, height };
+  return {
+    lane: classifyLane(nx),
+    height: ny < 0.16 ? Height.Over : Height.Under,
+  };
 }
 
 export function outcomeToPhase(o) {
