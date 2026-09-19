@@ -123,6 +123,7 @@ function hud() {
     : `Best of 5 · ${S.side === "you" ? "you shoot" : "AI shoots"}`;
   statusEl.textContent = statusText();
   againBtn.hidden = S.phase !== Phase.PhaseOver;
+  statusEl.dataset.sound = soundReady ? "on" : "off";
   flashLabel();
 }
 
@@ -234,15 +235,16 @@ scene.fogStart = 22;
 scene.fogEnd = 48;
 scene.fogColor = new B.Color3(0.55, 0.75, 0.92);
 
-const camera = new B.FreeCamera("cam", new B.Vector3(0, 2.15, 15.4), scene);
-camera.minZ = 0.1;
-camera.setTarget(new B.Vector3(0, 1.35, 0));
+const camera = new B.FreeCamera("cam", new B.Vector3(0, 1.7, 14.8), scene);
+camera.minZ = 0.08;
+camera.fov = 1.05;
+camera.setTarget(new B.Vector3(0, 1.05, 2.5));
 
 const hemi = new B.HemisphericLight("hemi", new B.Vector3(0.15, 1, 0.25), scene);
 hemi.intensity = 0.85;
-const sun = new B.DirectionalLight("sun", new B.Vector3(0.35, -1, 0.45), scene);
-sun.position = new B.Vector3(-6, 14, 8);
-sun.intensity = 0.7;
+const sun = new B.DirectionalLight("sun", new B.Vector3(0.45, -1.15, 0.35), scene);
+sun.position = new B.Vector3(-8, 16, 10);
+sun.intensity = 0.85;
 
 const pitchMat = new B.StandardMaterial("pitchMat", scene);
 pitchMat.diffuseColor = new B.Color3(0.11, 0.46, 0.22);
@@ -274,20 +276,22 @@ boxLine("boxL", 0.08, 16.5, -5.5, 8.25);
 boxLine("boxR", 0.08, 16.5, 5.5, 8.25);
 boxLine("boxB", 11.08, 0.08, 0, 16.5);
 boxLine("six", 10, 0.08, 0, 5.5);
-boxLine("spotRing", 0.55, 0.55, 0, SPOT_Z);
+const spotMark = B.MeshBuilder.CreateCylinder("spot", { height: 0.02, diameter: 0.3 }, scene);
+spotMark.position = new B.Vector3(0, 0.015, SPOT_Z);
+spotMark.material = lineMat;
 
 const postMat = new B.StandardMaterial("postMat", scene);
 postMat.diffuseColor = new B.Color3(0.96, 0.95, 0.9);
 postMat.specularColor = new B.Color3(0.3, 0.3, 0.3);
 function post(name, x) {
-  const p = B.MeshBuilder.CreateCylinder(name, { height: BAR_Y, diameter: 0.12 }, scene);
+  const p = B.MeshBuilder.CreateCylinder(name, { height: BAR_Y, diameter: 0.16 }, scene);
   p.position = new B.Vector3(x, BAR_Y / 2, 0);
   p.material = postMat;
   return p;
 }
 post("postL", -GOAL_HALF_W);
 post("postR", GOAL_HALF_W);
-const bar = B.MeshBuilder.CreateCylinder("bar", { height: GOAL_HALF_W * 2 + 0.12, diameter: 0.12 }, scene);
+const bar = B.MeshBuilder.CreateCylinder("bar", { height: GOAL_HALF_W * 2 + 0.16, diameter: 0.16 }, scene);
 bar.rotation.z = Math.PI / 2;
 bar.position = new B.Vector3(0, BAR_Y, 0);
 bar.material = postMat;
@@ -351,6 +355,14 @@ gloveL.material = skinMat;
 gloveL.parent = keeperRoot;
 const gloveR = gloveL.clone("gloveR");
 gloveR.position.x = 0.4;
+
+pitch.receiveShadows = true;
+const shadow = new B.ShadowGenerator(1024, sun);
+shadow.useBlurExponentialShadowMap = true;
+shadow.setDarkness(0.35);
+shadow.addShadowCaster(ball);
+shadow.addShadowCaster(body);
+shadow.addShadowCaster(head);
 
 const aimMat = new B.StandardMaterial("aimMat", scene);
 aimMat.diffuseColor = new B.Color3(1, 0.88, 0.35);
